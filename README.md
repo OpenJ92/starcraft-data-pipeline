@@ -1,44 +1,51 @@
-# Starcraft Data Platform
+# Starcraft Data Pipeline
 
 ## **Status: Work in Progress 🚧**
 
-This repository is under active development. It defines the database architecture for ingesting, storing, and analyzing Starcraft II replay data.
+This repository is under active development. It implements the data ingestion pipeline for collecting, processing, and injecting Starcraft II replay data into the `starcraft-data-platform` database.
 
 ---
 
 ## **Overview**
 
-The **Starcraft Data Platform** is designed to:
-- Store raw replay data, player information, and event logs in a relational database.
-- Provide analytics views and materialized tables for advanced insights.
-- Enable machine learning workflows by supporting feature engineering and model outputs.
+The **Starcraft Data Pipeline** automates the ingestion of Starcraft II replay data, enabling seamless integration with downstream analytics and machine learning workflows.
+
+### **Key Features**:
+- **Replay Collection**:
+  - Fetches replay files from external sources using scrapers.
+  - Handles asynchronous scraping for high performance.
+- **Storage Abstractions**:
+  - Saves replays to local storage or cloud services like Amazon S3.
+- **Database Integration**:
+  - Processes and injects structured replay data into the `starcraft-data-platform` database.
 
 ---
 
 ## **Planned Features**
 
 1. **Core Functionality**:
-   - Relational database schema for storing raw replay data.
-   - Analytics views for player statistics and performance trends.
-   - ML schema for storing model outputs and feature sets.
+   - Scrapers for multiple replay hosting websites.
+   - Flexible storage backends (local and cloud-based).
+   - Injection pipeline for database integration.
 
 2. **Technology Stack**:
-   - PostgreSQL for database storage.
-   - SQLAlchemy for ORM models.
-   - Docker for containerized deployment.
-   - AmazonRDS Hosting for Prod, Dev and Test
+   - Python with `asyncio` for asynchronous scraping and processing.
+   - PostgreSQL as the database backend (via `starcraft-data-platform`).
+   - Amazon S3 for scalable storage.
 
 3. **Future Enhancements**:
-   - Performance optimization for materialized views.
-   - Expanded analytics for build orders and map-specific trends.
+   - Add real-time monitoring of scraping progress.
+   - Integrate advanced error handling and retry mechanisms.
+   - Extend support to additional replay sources or APIs.
 
 ---
 
 ## **Current Focus**
 
 The current phase of development is focused on:
-- Designing the `raw` schema for replay ingestion.
-- Creating analytics views for player statistics.
+- Building the scraper framework to collect replay data.
+- Implementing storage backends (local and S3).
+- Creating the injection logic for loading replays into the database.
 
 ---
 
@@ -52,23 +59,29 @@ The current phase of development is focused on:
 
 This repository will be organized into the following structure:
 
-- **`db/`**: Contains all database-related files.
-  - **`schema.sql`**: A consolidated SQL file for creating all database schemas, including raw, analytics, and ML schemas.
-  - **`models/`**: A directory housing SQLAlchemy ORM models.
-    - **`replay.py`**: ORM models for replay metadata tables (e.g., Info, Player, Team).
-    - **`events.py`**: ORM models for event data (e.g., UnitBornEvent, SelectionEvent).
-    - **`datapack.py`**: ORM models for unit and ability metadata (e.g., UnitType, Ability).
-  - **`analytics/`**: SQL files for analytics views and materialized tables.
-    - **`player_stats.sql`**: A view aggregating player performance metrics.
-    - **`map_performance.sql`**: A view tracking win rates by map and race.
-    - **`player_stats_summary.sql`**: A materialized view summarizing player statistics across replays.
+- **`scrape/`**: Handles replay collection from external sources.
+  - **`factory.py`**: Manages multiple scrapers and coordinates their execution.
+  - **`scrapers/`**: Directory for specific scraper implementations.
+    - Example: A scraper for Website A.
+  - **`utils.py`**: Utility functions for common scraping operations.
 
-- **`tests/`**: Contains unit tests for validating schema and models.
-  - **`test_schema.py`**: Tests to ensure the database schema is correctly defined.
-  - **`test_models.py`**: Tests for ORM models to verify accurate data interaction.
-  - **`test_analytics.py`**: Tests for analytics queries and performance.
+- **`inject/`**: Handles processing and injecting data into the database.
+  - **`inject.py`**: Core logic for transforming and inserting replay data.
+  - **`utils.py`**: Helper functions for data cleaning and preparation.
 
-- **`Dockerfile`**: Configuration for containerizing the project, ensuring consistent environments for development and deployment.
+- **`shared/`**: Contains shared utilities and abstractions used by the pipeline.
+  - **`storage.py`**: Abstract base class for storage backends.
+    - Includes `LocalStorage` for saving to the local filesystem.
+    - Includes `S3Storage` for uploading to Amazon S3.
+  - **`config.py`**: Configuration settings for the pipeline.
+  - **`logging.py`**: Logging setup for tracking progress and errors.
+
+- **`tests/`**: Contains unit tests for each module.
+  - **`test_scrape.py`**: Tests for scraper functionality.
+  - **`test_inject.py`**: Tests for the injection pipeline.
+  - **`test_storage.py`**: Tests for local and S3 storage backends.
+
+- **`Dockerfile`**: Configuration for containerizing the pipeline, ensuring consistent environments for development and deployment.
 
 - **`README.md`**: This documentation file, providing an overview of the project and its structure.
 
@@ -85,7 +98,3 @@ Contributions are welcome once the repository reaches a stable state. If you'd l
 [MIT License]
 
 ---
-
-## **Contact**
-
-For questions or feedback, please contact [your GitHub profile link].
